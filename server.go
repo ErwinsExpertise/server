@@ -49,9 +49,6 @@ func handleConnection(conn net.Conn) {
 			CheckError(err)
 			return
 		}
-		if id > 0 {
-			return
-		}
 
 		packet := cipher.DecodeIV(key, data[:id])
 
