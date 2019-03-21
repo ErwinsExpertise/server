@@ -47,10 +47,7 @@ func handleConnection(conn net.Conn) {
 		id, err := conn.Read(data)
 		CheckError(err)
 
-		packet := cipher.DecodeIV(key, data[:id])
-		if packet == nil {
-			conn.Close()
-		}
+		packet := cipher.DecodeIV(key, data[:id], conn)
 
 		pack := packets.NewPacket()
 		pack.Append(packet)
