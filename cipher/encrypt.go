@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-func genKey() []byte {
+func GenKey() []byte {
 	salt := []byte{0xc8, 0x28, 0xf2, 0x58, 0xa7, 0x6a, 0xad, 0x7b}
 
 	dk, err := scrypt.Key([]byte("mYpasSwoRd"), salt, 32768, 8, 1, 32)
@@ -20,9 +20,8 @@ func genKey() []byte {
 	return dk
 }
 
-func MakeIV(s string) []byte {
+func MakeIV(s string, key []byte) []byte {
 	payload := []byte(s)
-	key := genKey()
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -37,5 +36,22 @@ func MakeIV(s string) []byte {
 	stream := cipher.NewCFBEncrypter(block, iv)
 	stream.XORKeyStream(ciphertext[aes.BlockSize:], payload)
 
+	return ciphertext
+}
+func DecodeIV(key []byte, ciphertext []byte) []byte {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(ciphertext) < aes.BlockSize {
+		panic("ciphertext too short")
+	}
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+
+	stream.XORKeyStream(ciphertext, ciphertext)
 	return ciphertext
 }

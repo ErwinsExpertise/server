@@ -8,8 +8,11 @@ import (
 	"log"
 	"net"
 
+	"./cipher"
 	"./packets"
 )
+
+var key []byte
 
 func CheckError(err error) {
 	if err != nil {
@@ -35,18 +38,24 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) {
-	for {
-		data := make([]byte, 4)
+	key = cipher.GenKey()
+	_, err := conn.Write(key)
+	CheckError(err)
 
-		_, err := conn.Read(data)
+	for {
+		data := make([]byte, 512)
+
+		id, err := conn.Read(data)
 		CheckError(err)
 
-		pack := packets.NewPacket()
-		pack.Append(data)
+		packet := cipher.DecodeIV(key, data[:id])
 
-		fuck := packets.NewReader(&pack)
-		log.Printf("\nReading: %+v ", fuck)
-		process(conn, fuck)
+		pack := packets.NewPacket()
+		pack.Append(packet)
+
+		load := packets.NewReader(&pack)
+		log.Printf("\nReading: %+v ", load)
+		process(conn, load, key)
 
 	}
 
@@ -62,8 +71,9 @@ func readPacket(b []byte) (uint32, error) {
 	}
 }
 
-func sendPacket(b []byte, conn net.Conn) {
-	_, err := conn.Write(b)
+func sendPacket(b []byte, key []byte, conn net.Conn) {
+	send := cipher.MakeIV(string(b), key)
+	_, err := conn.Write(send)
 	CheckError(err)
 }
 
