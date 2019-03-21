@@ -46,7 +46,7 @@ func handleConnection(conn net.Conn) {
 		data := make([]byte, 512)
 
 		id, err := conn.Read(data)
-		if err != io.EOF {
+		if err == io.EOF {
 			log.Printf("Connection closed: %s", conn.RemoteAddr())
 			conn.Close()
 		}
