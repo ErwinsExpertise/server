@@ -56,7 +56,7 @@ func handleConnection(conn net.Conn) {
 		pack.Append(packet)
 
 		load := packets.NewReader(&pack)
-		log.Printf("\nClient: %s Packet Recieved: %+v ", conn.RemoteAddr(), load)
+		log.Printf(" Client: %s Packet Recieved: %+v ", conn.RemoteAddr(), load)
 		process(conn, load, key)
 
 	}
