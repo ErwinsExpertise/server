@@ -49,6 +49,7 @@ func handleConnection(conn net.Conn) {
 		if err == io.EOF {
 			log.Printf("Connection closed: %s", conn.RemoteAddr())
 			conn.Close()
+			break
 		}
 
 		packet := cipher.DecodeIV(key, data[:id])
