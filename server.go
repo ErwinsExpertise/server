@@ -28,7 +28,7 @@ func main() {
 
 		conn, err := serv.Accept()
 		CheckError(err)
-		log.Printf("[Address] %s", conn.RemoteAddr())
+		log.Printf("Client connected: %s", conn.RemoteAddr())
 		defer conn.Close()
 
 		go handleConnection(conn)
@@ -53,7 +53,7 @@ func handleConnection(conn net.Conn) {
 		pack.Append(packet)
 
 		load := packets.NewReader(&pack)
-		log.Printf("\nReading: %+v ", load)
+		log.Printf("\nClient: %s Packet Recieved: %+v ", conn.RemoteAddr(), load)
 		process(conn, load, key)
 
 	}
