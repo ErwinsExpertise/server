@@ -31,7 +31,6 @@ func MakeIV(s string, key []byte) []byte {
 	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		log.Println(err)
-		return nil
 	}
 
 	stream := cipher.NewCFBEncrypter(block, iv)
@@ -47,6 +46,7 @@ func DecodeIV(key []byte, ciphertext []byte) []byte {
 
 	if len(ciphertext) < aes.BlockSize {
 		log.Println("Invalid packet recieved during encryption!")
+		return nil
 	}
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
