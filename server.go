@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 
@@ -29,7 +28,7 @@ func main() {
 
 		conn, err := serv.Accept()
 		CheckError(err)
-		fmt.Sprintf("[Address] %s", conn.RemoteAddr())
+		log.Printf("[Address] %s", conn.RemoteAddr())
 		defer conn.Close()
 
 		go handleConnection(conn)
