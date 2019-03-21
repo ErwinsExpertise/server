@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"io"
 	"log"
 	"net"
 
@@ -45,9 +46,12 @@ func handleConnection(conn net.Conn) {
 		data := make([]byte, 512)
 
 		id, err := conn.Read(data)
-		CheckError(err)
+		if err != io.EOF {
+			log.Printf("Connection closed: %s", conn.RemoteAddr())
+			conn.Close()
+		}
 
-		packet := cipher.DecodeIV(key, data[:id], conn)
+		packet := cipher.DecodeIV(key, data[:id])
 
 		pack := packets.NewPacket()
 		pack.Append(packet)

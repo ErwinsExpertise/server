@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"io"
 	"log"
-	"net"
 
 	"golang.org/x/crypto/scrypt"
 )
@@ -39,7 +38,7 @@ func MakeIV(s string, key []byte) []byte {
 
 	return ciphertext
 }
-func DecodeIV(key []byte, ciphertext []byte, conn net.Conn) []byte {
+func DecodeIV(key []byte, ciphertext []byte) []byte {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err)
@@ -47,7 +46,6 @@ func DecodeIV(key []byte, ciphertext []byte, conn net.Conn) []byte {
 
 	if len(ciphertext) < aes.BlockSize {
 		log.Println("Invalid packet recieved during encryption!")
-		conn.Close()
 	}
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
